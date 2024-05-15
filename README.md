@@ -1,3 +1,5 @@
 # MLOps Zoomcamp course
 
-Homeworks and capstone projects for the MLOps course from DataTalks.Club 
+The main course website link is on GitHub at [DataTalksClub / mlops-zoomcamp](https://github.com/DataTalksClub/mlops-zoomcamp "https://github.com/DataTalksClub/mlops-zoomcamp").
+
+All the materials specific to the 2024 course will be in [the 2024 cohort folder](https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/cohorts/2024 "https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/cohorts/2024").
