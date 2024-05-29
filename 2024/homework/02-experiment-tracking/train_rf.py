@@ -24,7 +24,8 @@ def load_pickle(filename: str):
 def run_train(data_path: str):
     with mlflow.start_run():
         mlflow.set_tag("developer", 'angelo')
-        mlflow.set_tag("model", 'random_forest')
+        # mlflow.set_tag("model", 'random_forest')
+        mlflow.set_tag("estimator_name", 'random_forest')
         mlflow.autolog()
 
         X_train, y_train = load_pickle(os.path.join(data_path, "train.pkl"))
@@ -34,10 +35,10 @@ def run_train(data_path: str):
         mlflow.log_param('max_depth', max_depth)
         rf = RandomForestRegressor(max_depth=max_depth, random_state=0)
         rf.fit(X_train, y_train)
-        y_pred = rf.predict(X_val)
+        y_pred_rf = rf.predict(X_val)
 
-        rmse = root_mean_squared_error(y_val, y_pred)
-        mlflow.log_metric('rmse', rmse)
+        rmse_rf = root_mean_squared_error(y_val, y_pred_rf)
+        mlflow.log_metric('rmse_rf', rmse_rf)
         mlflow.sklearn.log_model(rf, artifact_path='models_mlflow')
 
 
