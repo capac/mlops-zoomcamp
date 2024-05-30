@@ -164,5 +164,8 @@ cython_debug/
 *.csv
 *.parquet
 
-# MLFlow runs folder
+# MLflow runs folder
 mlruns/
+
+# MLflow artifacts folder
+mlartifacts/
