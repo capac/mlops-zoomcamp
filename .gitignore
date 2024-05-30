@@ -164,8 +164,27 @@ cython_debug/
 *.csv
 *.parquet
 
-# MLflow runs folder
-mlruns/
-
 # MLflow artifacts folder
 mlartifacts/
+
+# Mage AI ignore list
+*.db
+.DS_Store
+.file_versions
+.gitkeep
+.log
+.logs/
+.mage_temp_profiles
+.preferences.yaml
+.ssh_tunnel
+.terraform
+.terraform.*
+.variables/
+docker-compose.override.yml
+logs/
+mage_data/
+mlruns/
+secrets/
+terraform.tfstate
+terraform.tfstate.backup
+titanic_clean.csv
