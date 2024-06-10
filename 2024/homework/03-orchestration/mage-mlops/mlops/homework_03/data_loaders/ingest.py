@@ -1,6 +1,7 @@
 import requests
 from io import BytesIO
 from typing import List
+import numpy as np
 
 import pandas as pd
 
@@ -29,7 +30,9 @@ def ingest_files(**kwargs) -> pd.DataFrame:
             if response.status_code != 200:
                 raise Exception(response.text)
             df = pd.read_parquet(BytesIO(response.content))
+            df['tpep_pickup_datetime_cleaned'] = df['tpep_pickup_datetime'].astype(np.int64) // 10**9
             dfs.append(df)
+
     return pd.concat(dfs)
 
 
