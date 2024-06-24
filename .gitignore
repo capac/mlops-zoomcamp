@@ -188,3 +188,6 @@ secrets/
 terraform.tfstate
 terraform.tfstate.backup
 titanic_clean.csv
+
+# Docker compose ignore list
+workspace/
