@@ -54,3 +54,31 @@ def test_predict():
     expected_prediction = 10.0
 
     assert actual_prediction == expected_prediction
+
+
+def test_lambda_handler():
+    model_mock = ModelMock(10.0)
+    model_version = 'Test123'
+    model_service = model.ModelService(model_mock, model_version)
+
+    event = {
+        "Records": [{
+            "kinesis": {
+                "data": "ewogICAgICAgICJyaWRlIjogewogICAgICAgICAgICAiUFVMb2NhdGlvbklEIjogMTMwLAogICAgICAgICAgICAiRE9Mb2NhdGlvbklEIjogMjA1LAogICAgICAgICAgICAidHJpcF9kaXN0YW5jZSI6IDMuNjYKICAgICAgICB9LCAKICAgICAgICAicmlkZV9pZCI6IDI1NgogICAgfQ==",
+            },
+        }]
+    }
+
+    actual_predictions = model_service.lambda_handler(event)
+    expected_predictions = {
+        'predictions': [{
+            'model': 'ride_duration_prediction_model',
+            'version': model_version,
+            'prediction': {
+                'ride_duration': 10.0,
+                'ride_id': 256
+            }
+        }]
+    }
+
+    assert actual_predictions == expected_predictions
