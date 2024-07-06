@@ -21,8 +21,9 @@ def base64_decode(encoded_data):
 
 class ModelService():
 
-    def __init__(self, model):
+    def __init__(self, model, model_version=None):
         self.model = model
+        self.model_version = model_version
 
     def prepare_features(self, ride):
         features = {}
@@ -51,7 +52,7 @@ class ModelService():
 
             prediction_event = {
                 'model': 'ride_duration_prediction_model',
-                'version': '123',
+                'version': self.model_version,
                 'prediction': {
                     'ride_duration': prediction,
                     'ride_id': ride_id   
