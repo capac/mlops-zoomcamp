@@ -42,9 +42,8 @@ class ModelMock:
 
 
 def test_predict():
-    model = ModelMock(10.0)
-
-    model_service = model.ModelService(None)
+    model_mock = ModelMock(10.0)
+    model_service = model.ModelService(model_mock)
     
     features = {
         "PU_DO": "130_205",
