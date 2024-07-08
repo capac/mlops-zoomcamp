@@ -3,9 +3,17 @@ import sys
 import pickle
 import pandas as pd
 
+s3_endpoint_url = os.environ.get('S3_ENDPOINT_URL', 'http://localhost:4566')
 
-def read_data(filename, categorical):
-    df = pd.read_parquet(filename)
+options = {
+    'client_kwargs': {
+        'endpoint_url': s3_endpoint_url
+        }
+    }
+
+
+def read_data(options, categorical):
+    df = pd.read_parquet('s3://bucket/file.parquet', storage_options=options)
 
     df['duration'] = df.tpep_dropoff_datetime - df.tpep_pickup_datetime
     df['duration'] = df.duration.dt.total_seconds() / 60
