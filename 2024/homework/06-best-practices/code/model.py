@@ -96,5 +96,9 @@ def init(prediction_stream_name: str, run_id: str, test_run: bool):
         )
         callbacks.append(kinesis_callback.put_record)
 
-    model_service = ModelService(model)
+    model_service = ModelService(
+        model=model,
+        model_version=run_id,
+        callbacks=callbacks,
+    )
     return model_service
