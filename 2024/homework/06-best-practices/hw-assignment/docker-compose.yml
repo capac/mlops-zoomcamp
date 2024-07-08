@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"  # Main endpoint for all services
+      - "4571:4571"  # Edge port for Lambda
+    environment:
+      - SERVICES=s3  # Specify the services you want to use
+      - EDGE_PORT=4566
+    volumes:
+      - "./localstack:/var/lib/localstack"  # Persistent storage (optional)
