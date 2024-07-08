@@ -2,14 +2,17 @@ import model
 
 
 def test_base64_decode():
-    base64_input = "ewogICAgICAgICJyaWRlIjogewogICAgICAgICAgICAiUFVMb2NhdGlvbklEIjogMTMwLAogICAgICAgICAgICAiRE9Mb2NhdGlvbklEIjogMjA1LAogICAgICAgICAgICAidHJpcF9kaXN0YW5jZSI6IDMuNjYKICAgICAgICB9LCAKICAgICAgICAicmlkZV9pZCI6IDI1NgogICAgfQ=="
+    base64_input = "ewogICAgICAgICJyaWRlIjogewogICAgICAgICAgICAiUFVMb2Nhd"\
+        "GlvbklEIjogMTMwLAogICAgICAgICAgICAiRE9Mb2NhdGlvbklEIjogMjA1LAog"\
+        "ICAgICAgICAgICAidHJpcF9kaXN0YW5jZSI6IDMuNjYKICAgICAgICB9LC"\
+        "AKICAgICAgICAicmlkZV9pZCI6IDI1NgogICAgfQ=="
     actual_result = model.base64_decode(base64_input)
     expected_result = {
         "ride": {
             "PULocationID": 130,
             "DOLocationID": 205,
             "trip_distance": 3.66
-        }, 
+        },
         "ride_id": 256
     }
     assert actual_result == expected_result
@@ -44,7 +47,7 @@ class ModelMock:
 def test_predict():
     model_mock = ModelMock(10.0)
     model_service = model.ModelService(model_mock)
-    
+
     features = {
         "PU_DO": "130_205",
         "trip_distance": 3.66,
@@ -64,9 +67,13 @@ def test_lambda_handler():
     event = {
         "Records": [{
             "kinesis": {
-                "data": "ewogICAgICAgICJyaWRlIjogewogICAgICAgICAgICAiUFVMb2NhdGlvbklEIjogMTMwLAogICAgICAgICAgICAiRE9Mb2NhdGlvbklEIjogMjA1LAogICAgICAgICAgICAidHJpcF9kaXN0YW5jZSI6IDMuNjYKICAgICAgICB9LCAKICAgICAgICAicmlkZV9pZCI6IDI1NgogICAgfQ==",
-            },
-        }]
+                "data": "ewogICAgICAgICJyaWRlIjogewogICAgICAgICAgICAiUFV"
+                        "Mb2NhdGlvbklEIjogMTMwLAogICAgICAgICAgICAiRE9Mb2Nhd"
+                        "GlvbklEIjogMjA1LAogICAgICAgICAgICAidHJpcF9kaXN0YW5j"
+                        "ZSI6IDMuNjYKICAgICAgICB9LCAKICAgICAgICAicmlkZV9pZCI"
+                        "6IDI1NgogICAgfQ==",
+                    },
+            }]
     }
 
     actual_predictions = model_service.lambda_handler(event)
