@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
+import os
 import sys
 import pickle
 import pandas as pd
@@ -19,7 +17,24 @@ def read_data(filename, categorical):
     return df
 
 
+def get_input_path(year, month):
+    base_url = 'd37ci6vzurychx.cloudfront.net/trip-data'
+    default_input_pattern = f'https://{base_url}/'
+    f'yellow_tripdata_{year:04d}-{month:02d}.parquet'
+    input_pattern = os.getenv('INPUT_FILE_PATTERN', default_input_pattern)
+    return input_pattern.format(year=year, month=month)
+
+
+def get_output_path(year, month):
+    default_output_pattern = 's3://nyc-duration-prediction-alexey/'\
+        'taxi_type=fhv/year={year:04d}/month={month:02d}/predictions.parquet'
+    output_pattern = os.getenv('OUTPUT_FILE_PATTERN', default_output_pattern)
+    return output_pattern.format(year=year, month=month)
+
+
 def main(year, month):
+    input_file = get_input_path(year, month)
+    output_file = get_output_path(year, month)
     df = read_data(input_file, categorical)
     df['ride_id'] = f'{year:04d}/{month:02d}_' + df.index.astype('str')
 
