@@ -26,7 +26,8 @@ class ModelService():
 
     def prepare_features(self, ride):
         features = {}
-        features['PU_DO'] = '%s_%s' % (ride['PULocationID'], ride['DOLocationID'])
+        features['PU_DO'] = '%s_%s' % (ride['PULocationID'],
+                                       ride['DOLocationID'])
         features['trip_distance'] = ride['trip_distance']
         return features
 
@@ -45,7 +46,7 @@ class ModelService():
             # print(ride_event)
             ride = ride_event['ride']
             ride_id = ride_event['ride_id']
-        
+
             features = self.prepare_features(ride)
             prediction = self.predict(features)
 
@@ -54,7 +55,7 @@ class ModelService():
                 'version': self.model_version,
                 'prediction': {
                     'ride_duration': prediction,
-                    'ride_id': ride_id   
+                    'ride_id': ride_id,
                 }
             }
 
