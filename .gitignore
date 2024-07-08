@@ -192,3 +192,4 @@ titanic_clean.csv
 # Docker compose ignore list
 workspace/
 .vscode/
+localstack/
