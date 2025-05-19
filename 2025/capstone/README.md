@@ -1,0 +1,3 @@
+# MLOps Zoomcamp Capstone Project
+
+The dataset employed in this MLOps Zoomcamp project is from the [AirROI](https://www.airroi.com/ "https://www.airroi.com/") website, which allow access to in-depth data from AirBNB rentals in my cities in the world. In the case of this project, the data comes from the [London, United Kingdom rental market](https://www.airroi.com/data-portal/markets/london "https://www.airroi.com/data-portal/markets/london"). As stated on the website, _"Comprehensive data for the London short-term rental market, including detailed property information, host profiles, guest reviews, and pricing patterns. This dataset is ideal for market research, competitive analysis, and investment decision-making."_
