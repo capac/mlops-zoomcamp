@@ -46,6 +46,7 @@ def run_optimization(data_path: str, num_trials: int):
 
     def objective(params):
         with mlflow.start_run() as run:
+            mlflow.log_params(params)
             rf = RandomForestRegressor(**params)
             rf.fit(X_train, y_train)
             y_pred = rf.predict(X_val)
