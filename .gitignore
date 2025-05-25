@@ -166,6 +166,7 @@ cython_debug/
 
 # MLflow artifacts folder
 mlartifacts/
+artifacts/
 
 # Mage AI ignore list
 *.db
