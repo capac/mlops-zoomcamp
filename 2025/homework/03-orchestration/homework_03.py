@@ -50,10 +50,6 @@ def load_data(data):
     return pd.read_parquet(data)
 
 
-df = load_data(data_file)
-print(f"The number of files loaded by Prefect is {df.shape[0]}.")
-
-
 # ## Question 4. Data preparation
 # 
 # Let's continue with pipeline creation. We will use the same logic for preparing the data we used previously. This is what we used (adjusted for yellow dataset):
@@ -96,10 +92,6 @@ def read_dataframe(filename):
     return df
 
 
-yellow_taxi_df = read_dataframe(data_file)
-print(f"The size of the dataframe loaded by Prefect is {yellow_taxi_df.shape[0]}.")
-
-
 # ## Question 5. Train a model
 # 
 # We will now train a linear regression model using the same code as in homework 1.
@@ -134,10 +126,6 @@ def transform_dataframe(df):
     lr.fit(X, y)
     
     return lr.intercept_
-
-
-y_intercept = transform_dataframe(yellow_taxi_df)
-print(f"The y-intercept field is {np.round(y_intercept, 5)}")
 
 
 # ## Question 6. Register the model
@@ -198,4 +186,15 @@ def register_model(df):
     mlflow.register_model(model_uri, name="yellow-taxi-linear-regressor")
 
 
-register_model(yellow_taxi_df)
+def main():
+    df = load_data(data_file)
+    print(f"The number of files loaded by Prefect is {df.shape[0]}.")
+    yellow_taxi_df = read_dataframe(data_file)
+    print(f"The size of the dataframe loaded by Prefect is {yellow_taxi_df.shape[0]}.")
+    y_intercept = transform_dataframe(yellow_taxi_df)
+    print(f"The y-intercept field is {np.round(y_intercept, 5)}")
+    register_model(yellow_taxi_df)
+
+
+if __name__ == "__main__":
+    main()
