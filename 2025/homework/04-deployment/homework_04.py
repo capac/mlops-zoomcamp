@@ -12,10 +12,7 @@ with open('model.bin', 'rb') as f_in:
 
 categorical = ['PULocationID', 'DOLocationID']
 
-home = Path.home()
-data_dir = (home /
-    'Programming/Python/data-talks-club/mlops-zoomcamp/2025/homework/04-deployment/data'
-    )
+data_dir = Path("./data")
 
 
 def read_data(filename):
@@ -134,16 +131,25 @@ def df_result_by_year_and_month(year, month, output=False):
 
 if __name__ == "__main__":
     # solution to question #1
+    print("Solution to question #1")
     year, month = (2023, 3)
     y_pred = predictions_by_year_and_month(year, month)
     print(f"The standard deviation of the predicted duration is {np.std(y_pred).round(2)}.")
 
     # solution to question #2
+    print("Solution to question #2")
     _ = df_result_by_year_and_month(year, month, output=True)
     statinfo = os.stat("./result.parquet")
     print(f"File size is {round(statinfo.st_size/(1024*1024), 2)} MB.")
 
     # solution to question #5
+    print("Solution to question #5")
     year, month = (2023, 4)
+    df_result = df_result_by_year_and_month(year, month)
+    print(f"Mean predicted duration is {np.mean(df_result.predictions).round(2)}.")
+
+    # solution to question #6
+    print("Solution to question #6")
+    year, month = (2023, 5)
     df_result = df_result_by_year_and_month(year, month)
     print(f"Mean predicted duration is {np.mean(df_result.predictions).round(2)}.")
