@@ -42,13 +42,14 @@ if __name__ == "__main__":
     with open('model.bin', 'rb') as f_in:
         dv, lr = pickle.load(f_in)
 
+    categorical = ['PULocationID', 'DOLocationID']
+
     year = int(sys.argv[1])
     month = int(sys.argv[2])
 
-    input_file = ('https://d37ci6vzurychx.cloudfront.net/trip-data/'
-                  f'yellow_tripdata_{year:04d}-{month:02d}.parquet')
-    output_file = f'output/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+    base_url = 'https://d37ci6vzurychx.cloudfront.net/trip-data'
 
-    categorical = ['PULocationID', 'DOLocationID']
+    input_file = f'{base_url}/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+    output_file = f'output/yellow_tripdata_{year:04d}-{month:02d}.parquet'
 
     main(year, month)
