@@ -2,13 +2,12 @@
 # coding: utf-8
 
 import sys
+import os
 import pickle
 import pandas as pd
 
 
-def read_data(filename):
-    df = pd.read_parquet(filename)
-
+def prepare_data(df, categorical):
     df['duration'] = df.tpep_dropoff_datetime - df.tpep_pickup_datetime
     df['duration'] = df.duration.dt.total_seconds() / 60
 
@@ -19,10 +18,36 @@ def read_data(filename):
     return df
 
 
-def main(year, month):
+def read_data(filename, categorical):
+    S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL')
 
-    df = read_data(input_file)
+    if S3_ENDPOINT_URL is not None:
+        options = {
+            'client_kwargs': {
+                'endpoint_url': S3_ENDPOINT_URL
+            }
+        }
+
+        df = pd.read_parquet(filename, storage_options=options)
+    else:
+        df = pd.read_parquet(filename)
+
+    return prepare_data(df, categorical)
+
+
+def main(year, month):
+    base_url = 'https://d37ci6vzurychx.cloudfront.net/trip-data'
+
+    input_file = f'{base_url}/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+    output_file = f'output/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+
+    categorical = ['PULocationID', 'DOLocationID']
+
+    df = read_data(input_file, categorical)
     df['ride_id'] = f'{year:04d}/{month:02d}_' + df.index.astype('str')
+
+    with open('model.bin', 'rb') as f_in:
+        dv, lr = pickle.load(f_in)
 
     dicts = df[categorical].to_dict(orient='records')
     X_val = dv.transform(dicts)
@@ -38,18 +63,7 @@ def main(year, month):
 
 
 if __name__ == "__main__":
-
-    with open('model.bin', 'rb') as f_in:
-        dv, lr = pickle.load(f_in)
-
-    categorical = ['PULocationID', 'DOLocationID']
-
     year = int(sys.argv[1])
     month = int(sys.argv[2])
-
-    base_url = 'https://d37ci6vzurychx.cloudfront.net/trip-data'
-
-    input_file = f'{base_url}/yellow_tripdata_{year:04d}-{month:02d}.parquet'
-    output_file = f'output/yellow_tripdata_{year:04d}-{month:02d}.parquet'
 
     main(year, month)
