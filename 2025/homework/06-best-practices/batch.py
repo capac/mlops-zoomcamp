@@ -35,6 +35,22 @@ def read_data(filename, categorical):
     return prepare_data(df, categorical)
 
 
+def save_data(filename, df):
+    S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL')
+
+    if S3_ENDPOINT_URL is not None:
+        options = {
+            'client_kwargs': {
+                'endpoint_url': S3_ENDPOINT_URL
+            }
+        }
+
+        df.to_parquet(filename, engine='pyarrow',
+                      index=False, storage_options=options)
+    else:
+        df.to_parquet(filename, engine='pyarrow', index=False)
+
+
 def main(year, month):
     base_url = 'https://d37ci6vzurychx.cloudfront.net/trip-data'
 
@@ -59,7 +75,7 @@ def main(year, month):
     df_result['ride_id'] = df['ride_id']
     df_result['predicted_duration'] = y_pred
 
-    df_result.to_parquet(output_file, engine='pyarrow', index=False)
+    save_data(output_file, df_result)
 
 
 if __name__ == "__main__":
