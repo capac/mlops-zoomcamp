@@ -69,7 +69,7 @@ def main(year, month):
     X_val = dv.transform(dicts)
     y_pred = lr.predict(X_val)
 
-    print('Predicted mean duration:', y_pred.mean())
+    print('Predicted mean duration:', y_pred.mean().round(3))
 
     df_result = pd.DataFrame()
     df_result['ride_id'] = df['ride_id']
