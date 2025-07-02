@@ -25,13 +25,12 @@ def test_dataframe():
 def main(year, month):
 
     df = test_dataframe()
-    categorical = ['PULocationID', 'DOLocationID']
-    df = df[categorical]
     df['ride_id'] = f'{year:04d}/{month:02d}_' + df.index.astype('str')
 
     with open('model.bin', 'rb') as f_in:
         dv, lr = pickle.load(f_in)
 
+    categorical = ['PULocationID', 'DOLocationID']
     dicts = df[categorical].to_dict(orient='records')
     X_val = dv.transform(dicts)
     y_pred = lr.predict(X_val)
