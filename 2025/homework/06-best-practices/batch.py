@@ -16,7 +16,9 @@ def get_input_path(year, month):
     # pattern export command: export INPUT_FILE_PATTERN=\
     # "s3://nyc-duration/in/{year:04d}-{month:02d}.parquet"
     input_pattern = os.getenv('INPUT_FILE_PATTERN', default_input_pattern)
-    return input_pattern.format(year=year, month=month)
+    filename = input_pattern.format(year=year, month=month)
+    print(f'Input filename: {filename}')
+    return filename
 
 
 def get_output_path(year, month):
@@ -27,7 +29,9 @@ def get_output_path(year, month):
     # export OUTPUT_FILE_PATTERN=\
     # "output/yellow_tripdata_{year:04d}-{month:02d}.parquet"
     output_pattern = os.getenv('OUTPUT_FILE_PATTERN', default_output_pattern)
-    return output_pattern.format(year=year, month=month)
+    filename = output_pattern.format(year=year, month=month)
+    print(f'Output filename: {filename}')
+    return filename
 
 
 def prepare_data(df, categorical):
@@ -59,19 +63,16 @@ def read_data(filename, categorical):
 
 
 def save_data(filename, df):
-    S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL')
+    S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL', 'http://localhost:4566')
 
-    if S3_ENDPOINT_URL is not None:
-        options = {
-            'client_kwargs': {
-                'endpoint_url': S3_ENDPOINT_URL
-            }
+    options = {
+        'client_kwargs': {
+            'endpoint_url': S3_ENDPOINT_URL
         }
+    }
 
-        df.to_parquet(filename, engine='pyarrow',
-                      index=False, storage_options=options)
-    else:
-        df.to_parquet(filename, engine='pyarrow', index=False)
+    df.to_parquet(filename, engine='pyarrow',
+                  index=False, storage_options=options)
 
 
 def main(year, month):
