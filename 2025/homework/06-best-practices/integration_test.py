@@ -1,13 +1,7 @@
-import os
 import pandas as pd
 from datetime import datetime
+import pickle
 
-import batch
-
-os.environ.get('INPUT_FILE_PATTERN', "s3://nyc-duration/in/{year:04d}'\
-               '-{month:02d}.parquet")
-os.environ.get('OUTPUT_FILE_PATTERN', "s3://nyc-duration/out/{year:04d}'\
-               '-{month:02d}.parquet")
 
 columns = ['PULocationID', 'DOLocationID',
            'tpep_pickup_datetime', 'tpep_dropoff_datetime']
@@ -29,25 +23,27 @@ def test_dataframe():
 
 
 def main(year, month):
-    s3_endpoint_url = os.environ.get('S3_ENDPOINT_URL',
-                                     'http://localhost:4566')
-
-    options = {'client_kwargs': {'endpoint_url': s3_endpoint_url}}
 
     df = test_dataframe()
+    categorical = ['PULocationID', 'DOLocationID']
+    df = df[categorical]
+    df['ride_id'] = f'{year:04d}/{month:02d}_' + df.index.astype('str')
 
-    df.to_parquet(
-        output_file,
-        engine='pyarrow',
-        compression=None,
-        index=False,
-        storage_options=options
-    )
+    with open('model.bin', 'rb') as f_in:
+        dv, lr = pickle.load(f_in)
 
-    print(f'Written to {output_file}')
+    dicts = df[categorical].to_dict(orient='records')
+    X_val = dv.transform(dicts)
+    y_pred = lr.predict(X_val)
+
+    df_result = pd.DataFrame()
+    df_result['ride_id'] = df['ride_id']
+    df_result['predicted_duration'] = y_pred
+
+    sum_pred_dur = df_result['predicted_duration'].sum().round(2)
+    print(f'Sum of predicted durations for the test dataframe: {sum_pred_dur}')
 
 
 if __name__ == "__main__":
     year, month = 2023, 1
-    output_file = batch.get_output_path(year, month)
     main(year, month)
