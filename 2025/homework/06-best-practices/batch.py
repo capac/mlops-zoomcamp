@@ -46,6 +46,13 @@ def prepare_data(df, categorical):
 
 
 def read_data(filename, categorical):
+    # To download from NYC Taxi Data website, leave S3_ENDPOINT_URL empty.
+    # In Fish that requires 'set -e S3_ENDPOINT_URL', else to set the variable
+    # use 'export S3_ENDPOINT_URL="http://localhost:4566"'. This determines
+    # whether 'read_data' downloads the file from the website or simply reads
+    # it from the Localstack S3 bucket (remember to launch Docker and run
+    # 'docker-compose up', or 'docker-compose up --build' if it's the first
+    # time you run Docker or you need to rebuild the container.
     S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL')
 
     if S3_ENDPOINT_URL is not None:
