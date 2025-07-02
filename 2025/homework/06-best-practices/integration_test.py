@@ -1,6 +1,7 @@
-import pandas as pd
+import os
 from datetime import datetime
 import pickle
+import pandas as pd
 
 
 columns = ['PULocationID', 'DOLocationID',
@@ -22,12 +23,13 @@ def test_dataframe():
     return actual_df
 
 
-def main(year, month):
+def test_sum_pred(year=2023, month=1):
 
     df = test_dataframe()
     df['ride_id'] = f'{year:04d}/{month:02d}_' + df.index.astype('str')
 
-    with open('model.bin', 'rb') as f_in:
+    model_path = os.path.join(os.path.dirname(__file__), 'model.bin')
+    with open(model_path, 'rb') as f_in:
         dv, lr = pickle.load(f_in)
 
     categorical = ['PULocationID', 'DOLocationID']
@@ -42,7 +44,9 @@ def main(year, month):
     sum_pred_dur = df_result['predicted_duration'].sum().round(2)
     print(f'Sum of predicted durations for the test dataframe: {sum_pred_dur}')
 
+    assert abs(df_result['predicted_duration'].sum() - 92.79) < 1e-1
+
 
 if __name__ == "__main__":
     year, month = 2023, 1
-    main(year, month)
+    test_sum_pred(year, month)
