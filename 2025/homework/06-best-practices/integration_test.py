@@ -4,15 +4,13 @@ import pickle
 import pandas as pd
 
 
-columns = ['PULocationID', 'DOLocationID',
-           'tpep_pickup_datetime', 'tpep_dropoff_datetime']
-
-
 def dt(hour, minute, second=0):
     return datetime(2023, 1, 1, hour, minute, second)
 
 
 def test_dataframe():
+    columns = ['PULocationID', 'DOLocationID',
+               'tpep_pickup_datetime', 'tpep_dropoff_datetime']
     data = [
         (None, None, dt(1, 1), dt(1, 10)),
         (1, 1, dt(1, 2), dt(1, 10)),
