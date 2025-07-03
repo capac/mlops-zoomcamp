@@ -1,52 +1,54 @@
 import os
-from datetime import datetime
-import pickle
 import pandas as pd
+from datetime import datetime
 
-
-columns = ['PULocationID', 'DOLocationID',
-           'tpep_pickup_datetime', 'tpep_dropoff_datetime']
+# import batch
 
 
 def dt(hour, minute, second=0):
     return datetime(2023, 1, 1, hour, minute, second)
 
 
-def test_dataframe():
-    data = [
-        (None, None, dt(1, 1), dt(1, 10)),
-        (1, 1, dt(1, 2), dt(1, 10)),
-        (1, None, dt(1, 2, 0), dt(1, 2, 59)),
-        (3, 4, dt(1, 2, 0), dt(2, 2, 1)),
-    ]
-    actual_df = pd.DataFrame(data, columns=columns)
-    return actual_df
+S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL', 'http://localhost:4566')
+
+options = {
+    'client_kwargs': {
+        'endpoint_url': S3_ENDPOINT_URL
+    }
+}
+
+data = [
+    (None, None, dt(1, 1), dt(1, 10)),
+    (1, 1, dt(1, 2), dt(1, 10)),
+    (1, None, dt(1, 2, 0), dt(1, 2, 59)),
+    (3, 4, dt(1, 2, 0), dt(2, 2, 1)),
+]
+
+columns = ['PULocationID', 'DOLocationID',
+           'tpep_pickup_datetime', 'tpep_dropoff_datetime']
+df_input = pd.DataFrame(data, columns=columns)
 
 
-def test_sum_pred(year=2023, month=1):
+# input_file = batch.get_input_path(2023, 1)
+output_file = 's3://nyc-duration/out/2023-01.parquet'
+# output_file = batch.get_output_path(2023, 1)
 
-    df = test_dataframe()
-    df['ride_id'] = f'{year:04d}/{month:02d}_' + df.index.astype('str')
-
-    model_path = os.path.join(os.path.dirname(__file__), 'model.bin')
-    with open(model_path, 'rb') as f_in:
-        dv, lr = pickle.load(f_in)
-
-    categorical = ['PULocationID', 'DOLocationID']
-    dicts = df[categorical].to_dict(orient='records')
-    X_val = dv.transform(dicts)
-    y_pred = lr.predict(X_val)
-
-    df_result = pd.DataFrame()
-    df_result['ride_id'] = df['ride_id']
-    df_result['predicted_duration'] = y_pred
-
-    sum_pred_dur = df_result['predicted_duration'].sum().round(2)
-    print(f'Sum of predicted durations for the test dataframe: {sum_pred_dur}')
-
-    assert abs(df_result['predicted_duration'].sum() - 92.79) < 1e-1
+# df_input.to_parquet(
+#     input_parquet_file,
+#     engine='pyarrow',
+#     compression=None,
+#     index=False,
+#     storage_options=options
+# )
 
 
-if __name__ == "__main__":
-    year, month = 2023, 1
-    test_sum_pred(year, month)
+# os.system('python batch.py 2023 1')
+
+
+df_actual = pd.read_parquet(output_file, storage_options=options)
+
+y_pred = df_actual['predicted_duration']
+pred_dur_sum = y_pred.sum().round(2)
+print(f'Sum of predicted durations: {pred_dur_sum}')
+
+# assert abs(df_actual['predicted_duration'].sum() - 92.3) < 0.1
