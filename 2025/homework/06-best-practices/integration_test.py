@@ -2,53 +2,63 @@ import os
 import pandas as pd
 from datetime import datetime
 
-# import batch
-
 
 def dt(hour, minute, second=0):
     return datetime(2023, 1, 1, hour, minute, second)
 
 
-S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL', 'http://localhost:4566')
+def generate_input_file(input_file, options):
+    data = [
+        (None, None, dt(1, 1), dt(1, 10)),
+        (1, 1, dt(1, 2), dt(1, 10)),
+        (1, None, dt(1, 2, 0), dt(1, 2, 59)),
+        (3, 4, dt(1, 2, 0), dt(2, 2, 1)),
+    ]
 
-options = {
-    'client_kwargs': {
-        'endpoint_url': S3_ENDPOINT_URL
+    columns = ['PULocationID', 'DOLocationID',
+               'tpep_pickup_datetime', 'tpep_dropoff_datetime']
+    df = pd.DataFrame(data, columns=columns)
+
+    df.to_parquet(
+        input_file,
+        engine='pyarrow',
+        compression=None,
+        index=False,
+        storage_options=options
+    )
+
+
+def main(year=2023, month=1):
+    S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL', 'http://localhost:4566')
+    os.environ['INPUT_FILE_PATTERN'] = (
+        's3://nyc-duration/in/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+        )
+    os.environ['OUTPUT_FILE_PATTERN'] = (
+        's3://nyc-duration/out/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+        )
+
+    options = {
+        'client_kwargs': {
+            'endpoint_url': S3_ENDPOINT_URL
+        }
     }
-}
 
-data = [
-    (None, None, dt(1, 1), dt(1, 10)),
-    (1, 1, dt(1, 2), dt(1, 10)),
-    (1, None, dt(1, 2, 0), dt(1, 2, 59)),
-    (3, 4, dt(1, 2, 0), dt(2, 2, 1)),
-]
+    input_file = (
+        f's3://nyc-duration/in/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+        )
+    output_file = (
+        f's3://nyc-duration/out/yellow_tripdata_{year:04d}-{month:02d}.parquet'
+        )
 
-columns = ['PULocationID', 'DOLocationID',
-           'tpep_pickup_datetime', 'tpep_dropoff_datetime']
-df_input = pd.DataFrame(data, columns=columns)
+    generate_input_file(input_file, options)
 
+    exit_code = os.system(f'python batch.py {year} {month}')
+    assert exit_code == 0, f"batch.py exited with code {exit_code}"
 
-# input_file = batch.get_input_path(2023, 1)
-output_file = 's3://nyc-duration/out/2023-01.parquet'
-# output_file = batch.get_output_path(2023, 1)
-
-# df_input.to_parquet(
-#     input_parquet_file,
-#     engine='pyarrow',
-#     compression=None,
-#     index=False,
-#     storage_options=options
-# )
+    df_result = pd.read_parquet(output_file, storage_options=options)
+    total = df_result['predicted_duration'].sum()
+    print(f"Sum of predicted durations: {total.round(3)}")
 
 
-# os.system('python batch.py 2023 1')
-
-
-df_actual = pd.read_parquet(output_file, storage_options=options)
-
-y_pred = df_actual['predicted_duration']
-pred_dur_sum = y_pred.sum().round(2)
-print(f'Sum of predicted durations: {pred_dur_sum}')
-
-# assert abs(df_actual['predicted_duration'].sum() - 92.3) < 0.1
+if __name__ == "__main__":
+    main()
