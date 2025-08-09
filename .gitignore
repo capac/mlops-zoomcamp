@@ -194,3 +194,6 @@ titanic_clean.csv
 workspace/
 .vscode/
 localstack/
+
+# Evaluation folder for capstone projects
+project-evaluations
