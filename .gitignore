@@ -197,3 +197,6 @@ localstack/
 
 # Evaluation folder for capstone projects
 project-evaluations
+
+# Certification PDF
+DataTalks.Club ML Ops Zoomcamp.pdf
